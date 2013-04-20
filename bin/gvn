@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'thor'
+
+class Gvn::Command < Thor
+  desc "status", "show working status"
+  def status
+    `svn status`
+  end
+
+  #desc "efg [option]", "print 'efg'"
+  #option :upcase, :type => :boolean, :aliases => '-u', :desc => "disp upcase"
+  #def efg
+    #if options[:upcase]
+      #puts 'EFG!'
+    #else
+      #puts 'efg!'
+    #end
+  #end
+end
+
+Gvn::Command.start
