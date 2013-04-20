@@ -3,21 +3,63 @@
 require 'rubygems'
 require 'thor'
 
-class Gvn::Command < Thor
-  desc "status", "show working status"
-  def status
-    `svn status`
-  end
+module Gvn
+  class Command < Thor
+    desc "status", "show working status"
+    method_option :status, :alias => 's'
+    def status
+      `svn status`.each_line do |line|
+        status = Status.new(line)
+        next if status.ignore?
+        puts line
+      end
+    end
 
-  #desc "efg [option]", "print 'efg'"
-  #option :upcase, :type => :boolean, :aliases => '-u', :desc => "disp upcase"
-  #def efg
-    #if options[:upcase]
-      #puts 'EFG!'
-    #else
-      #puts 'efg!'
-    #end
-  #end
+    desc "add", "add files"
+    method_option :add, :alias => 'a'
+    def add(file)
+      if file != '.'
+        puts `svn add #{file}` 
+        return
+      end
+      `svn status`.each_line do |line|
+        status = Status.new(line)
+        next if status.ignore?
+        puts `svn add #{status.path}` if status.noversion?
+      end
+    end
+
+    desc "commit", "commit files"
+    method_option :commit, :alias => 'c'
+    def commit
+      targets = []
+      `svn status`.each_line do |line|
+        status = Status.new(line)
+        next if status.ignore? || status.noversion?
+        targets << status.path
+      end
+      system("svn commit #{targets.join(' ')}")
+    end
+    
+  end
+end
+
+module Gvn
+  class Status
+    attr_reader :type, :path
+
+    def initialize(line)
+      @type, @path = line.split(" ", 2).map {|v| v.chomp}
+    end
+
+    def noversion?
+      @type == '?'
+    end
+
+    def ignore?
+      @path =~ /.*\.dll/
+    end
+  end
 end
 
 Gvn::Command.start
