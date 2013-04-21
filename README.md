@@ -1,6 +1,13 @@
 # Gvn
 
-TODO: Write a gem description
+svn wrapper like git (になったらいいな).
+
+accessible alias
+
+    alias v='gvn'
+    alias vs='v s'
+    alias va='v a'
+    alias vc='v c'
 
 ## Installation
 
