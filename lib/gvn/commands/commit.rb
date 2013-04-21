@@ -26,7 +26,11 @@ module Gvn
       end
       # commit
       system("svn commit #{targets.join(' ')}")
-      # clear stage
+      # check status to clear stage
+      targets.each do |path|
+        status = Status.new(`svn status #{path}`)
+        return if status.modified?
+      end
       store.reset_stage
     end
   end

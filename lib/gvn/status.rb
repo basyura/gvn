@@ -7,6 +7,10 @@ module Gvn
       @type, @path = line.split(" ", 2).map {|v| v.chomp}
     end
 
+    def modified?
+      @type == 'M'
+    end
+
     def noversion?
       @type == '?'
     end
