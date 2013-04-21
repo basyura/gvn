@@ -2,13 +2,7 @@
 
 $:.unshift(File.dirname(__FILE__) + '/../lib/')
 
-require 'thor'
-require 'yaml'
-
-require 'gvn/command'
-require 'gvn/status'
-require 'gvn/gvnrc'
-require 'gvn/context'
+require 'gvn'
 #
 # ~/.gvnrc
 #
