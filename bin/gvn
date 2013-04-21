@@ -3,6 +3,7 @@
 $:.unshift(File.dirname(__FILE__) + '/../lib/')
 
 require 'gvn'
+require 'fileutils'
 #
 # ~/.gvnrc
 #
@@ -10,4 +11,9 @@ require 'gvn'
 # path:       [module_A, module_B]
 # ignore:     [.*\.(dll|exe|zip)]
 #
+
+unless Dir.exists?(File.expand_path('~/.gvn'))
+  FileUtils.mkdir_p(File.expand_path('~/.gvn') + '/stage')
+end
+
 Gvn::Command.start

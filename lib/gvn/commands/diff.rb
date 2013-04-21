@@ -1,17 +1,17 @@
-#
-# status
-#
+
 module Gvn
   class Command < Thor
-    desc "status", "show working status"
-    def status
-      store = GvnStore.new
+    desc "diff", "diff files"
+    def diff(file=nil)
+      if file
+        system("svn diff #{file}")
+        return
+      end
       Context.exec do |rc|
         `svn status #{rc.path}`.each_line do |line|
           status = Status.new(line)
           next if rc.ignore?(status)
-          type = store.staged?(status.path) ? '*' : ' '
-          puts type + line
+          puts `svn diff #{status.path}`
         end
       end
     end
