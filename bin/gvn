@@ -16,4 +16,9 @@ unless Dir.exists?(File.expand_path('~/.gvn'))
   FileUtils.mkdir_p(File.expand_path('~/.gvn') + '/stage')
 end
 
-Gvn::Command.start
+begin
+  Gvn::Command.start
+rescue ArgumentError => e
+  puts ""
+  puts e.message
+end
