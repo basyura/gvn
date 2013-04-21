@@ -17,12 +17,22 @@ module Gvn
       targets = []
       # stage files under directory
       if File.directory?(file)
+        print "stage under #{file} ? (y/n) : "
+        begin
+          return if STDIN.gets.chomp != 'y'
+        rescue Exception
+          return
+        end
+        puts ""
         rc = Gvnrc.new
         `svn status #{file}`.each_line do |line|
           status = Status.new(line)
           next if rc.ignore?(status)
           targets << status.path
         end
+      elsif !File.exist?(file)
+        puts 'no such fle : ' + file
+        return
       else
         # stage file
         targets << Status.new(`svn status #{file}`).path

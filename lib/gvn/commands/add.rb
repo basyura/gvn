@@ -27,7 +27,11 @@ module Gvn
       # check targets
       targets.each {|status| puts status.path }
       print "\nadd these files? (y/n) : "
-      return unless STDIN.gets.chomp == 'y'
+      begin
+        return unless STDIN.gets.chomp == 'y'
+      rescue Exception
+        return
+      end
       # add files
       targets.each do |status|
         puts `svn add #{status.path}`
