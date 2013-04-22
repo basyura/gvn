@@ -15,6 +15,13 @@ module Gvn
       @yaml["path"] ? @yaml["path"] : '.'
     end
 
+    def path_exists?(path)
+      all_path.each do |target|
+        return true if path =~ /^#{target}/
+      end
+      false
+    end
+
     def ignore?(status)
       return false unless @yaml["ignore"]
       @yaml["ignore"].each do |reg|

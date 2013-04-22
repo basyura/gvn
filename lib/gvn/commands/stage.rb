@@ -27,7 +27,8 @@ module Gvn
         rc = Gvnrc.new
         `svn status #{file}`.each_line do |line|
           status = Status.new(line)
-          next if rc.ignore?(status)
+          next unless rc.path_exists?(status.path)
+          next if rc.ignore?(status) || status.noversion?
           targets << status.path
         end
       elsif !File.exist?(file)
