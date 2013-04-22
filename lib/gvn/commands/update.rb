@@ -7,7 +7,7 @@ module Gvn
     method_option :update, :alias => 'u'
     def update
       Context.exec do |rc|
-        puts "update #{rc.path}"
+        #puts "update #{rc.path}"
         system("svn update #{rc.path}")
         puts ""
       end
