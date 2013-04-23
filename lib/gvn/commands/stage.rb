@@ -25,11 +25,23 @@ module Gvn
         end
         puts ""
         rc = Gvnrc.new
-        `svn status #{file}`.each_line do |line|
-          status = Status.new(line)
-          next unless rc.path_exists?(status.path)
-          next if rc.ignore?(status) || status.noversion?
-          targets << status.path
+        # TODO: refactore
+        if Dir.pwd =~ /#{rc.repository}$/
+          Context.exec do |rc|
+            `svn status #{rc.path}`.each_line do |line|
+              status = Status.new(line)
+              next unless rc.path_exists?(status.path)
+              next if rc.ignore?(status) || status.noversion?
+              targets << status.path
+            end
+          end
+        else
+          `svn status #{file}`.each_line do |line|
+            status = Status.new(line)
+            next unless rc.path_exists?(status.path)
+            next if rc.ignore?(status) || status.noversion?
+            targets << status.path
+          end
         end
       elsif !File.exist?(file)
         puts 'no such fle : ' + file

@@ -11,6 +11,10 @@ module Gvn
       end
     end
 
+    def repository
+      @yaml["repository"]
+    end
+
     def all_path
       @yaml["path"] ? @yaml["path"] : '.'
     end
