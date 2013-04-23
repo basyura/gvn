@@ -4,16 +4,34 @@ module Gvn
     desc "stage", "stage files"
     def stage(file=nil)
       require 'pstore'
-
-      store = GvnStore.new()
       # show staged files 
-      unless file
-        store.transaction(true) do |store|
-          (store["stage"] || []).each {|file| puts file}
-        end
+      return print_stage unless file
+      # stage file or dir
+      targets = on_stage(file)
+
+      if targets.empty?
+        puts "no target : #{file}"
         return
       end
-      
+      # print
+      puts "staged files"
+      targets.each {|file| puts "  " + file}
+      puts ""
+      puts "stage"
+      print_stage
+    end
+
+    private
+
+    def print_stage
+      puts ""
+      GvnStore.new().transaction(true) do |store|
+        (store["stage"] || []).each {|file| puts file}
+      end
+    end
+
+    def on_stage(file)
+      # target for stage 
       targets = []
       # stage files under directory
       if File.directory?(file)
@@ -24,48 +42,35 @@ module Gvn
           return
         end
         puts ""
-        rc = Gvnrc.new
-        # TODO: refactore
-        if Dir.pwd =~ /#{rc.repository}$/
-          Context.exec do |rc|
-            `svn status #{rc.path}`.each_line do |line|
-              status = Status.new(line)
-              next unless rc.path_exists?(status.path)
-              next if rc.ignore?(status) || status.noversion?
-              targets << status.path
-            end
-          end
-        else
-          `svn status #{file}`.each_line do |line|
-            status = Status.new(line)
-            next unless rc.path_exists?(status.path)
-            next if rc.ignore?(status) || status.noversion?
-            targets << status.path
-          end
-        end
-      elsif !File.exist?(file)
-        puts 'no such fle : ' + file
-        return
-      else
-        # stage file
+        targets = stage_directory(file)
+        puts ""
+      elsif File.exist?(file)
         targets << Status.new(`svn status #{file}`).path
       end
-
       # stage file
+      store = GvnStore.new
       store.transaction do |store|
         list = (store["stage"] || []) + targets
         store["stage"] = list.uniq
       end
+      targets
+    end
 
-      puts "staged files"
-      targets.each {|file| puts "  " + file}
-      puts ""
-      puts "stage"
-      store.transaction(true) do |store|
-        store["stage"].each do |file|
-          puts "  " + file
+    def stage_directory(dir)
+      rc = Gvnrc.new
+      dirs = [dir]
+      dirs = rc.all_path if Dir.pwd =~ /#{rc.repository}$/
+      targets = []
+      dirs.each do |path|
+        puts "stage from ... #{path}"
+        `svn status #{path}`.each_line do |line|
+          status = Status.new(line)
+          next unless rc.path_exists?(status.path)
+          next if rc.ignore?(status) || status.noversion?
+          targets << status.path
         end
       end
+      targets
     end
   end
 end

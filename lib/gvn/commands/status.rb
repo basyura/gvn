@@ -9,6 +9,7 @@ module Gvn
       #puts Dir.pwd
       #puts root
       #if Dir.pwd == root
+        puts ""
         store = GvnStore.new
         Context.exec do |rc|
           `svn status #{rc.path}`.each_line do |line|
