@@ -26,7 +26,7 @@ module Gvn
     def print_stage
       puts ""
       GvnStore.new().transaction(true) do |store|
-        (store["stage"] || []).each {|file| puts file}
+        (store["stage"] || []).each {|file| puts "  " + file}
       end
     end
 
