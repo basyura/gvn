@@ -8,6 +8,8 @@ module Gvn
     def add(file)
       if file != '.'
         puts `svn add #{file}` 
+        `gvn stage --silent #{file}`
+        puts `gvn status`
         return
       end
       # add targets
@@ -35,6 +37,8 @@ module Gvn
       # add files
       targets.each do |status|
         puts `svn add #{status.path}`
+        puts ''
+        puts `gvn stage #{status.path}`
       end
     end
   end

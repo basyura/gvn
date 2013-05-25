@@ -2,6 +2,7 @@
 module Gvn
   class Command < Thor
     desc "stage", "stage files"
+    option :silent, :type => :boolean, :default => false, :desc => "no display stage"
     def stage(file=nil)
       require 'pstore'
       # show staged files 
@@ -14,6 +15,8 @@ module Gvn
         return
       end
       # print
+      return if options[:silent]
+
       puts "staged files"
       targets.each {|file| puts "  " + file}
       puts ""
